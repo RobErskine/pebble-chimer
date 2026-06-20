@@ -1,0 +1,45 @@
+{
+  "name": "chimer",
+  "author": "rob",
+  "version": "1.0.0",
+  "keywords": ["pebble-app"],
+  "private": true,
+  "dependencies": {
+    "pebble-clay": "^1.0.4"
+  },
+  "pebble": {
+    "displayName": "Chimer",
+    "uuid": "7b3a9c64-1f2d-4e58-9a07-6c5d8e2f1b4a",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "targetPlatforms": ["emery"],
+    "watchapp": {
+      "watchface": false
+    },
+    "capabilities": ["configurable"],
+    "messageKeys": [
+      "ENABLED",
+      "DAYS_MASK",
+      "WINDOW_START",
+      "WINDOW_END",
+      "HALF_HOUR",
+      "VIBE_ENABLED",
+      "TONE_ENABLED",
+      "VIBE_FIRST",
+      "VIBE_HOUR",
+      "VIBE_HALF",
+      "VIBE_LAST",
+      "CLOCK_STYLE"
+    ],
+    "resources": {
+      "media": [
+        {
+          "type": "bitmap",
+          "name": "IMAGE_MENU_ICON",
+          "file": "images/menu_icon.png",
+          "menuIcon": true
+        }
+      ]
+    }
+  }
+}

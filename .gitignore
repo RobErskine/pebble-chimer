@@ -1,0 +1,14 @@
+# Pebble / waf build output
+build/
+.lock-waf_darwin_build
+
+# Node
+node_modules/
+*.log
+
+# macOS
+.DS_Store
+._*
+
+# Not committed
+STORE_LISTING.md
