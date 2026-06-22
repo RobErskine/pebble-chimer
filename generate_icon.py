@@ -37,11 +37,15 @@ def main():
     menu = draw_bell(25, fg=(255, 255, 255, 255))
     menu.save(os.path.join(img_dir, "menu_icon.png"))
 
-    # Marketing icon: white bell on the app's black rounded square.
+    # Store icons: white bell on the app's black rounded square.
+    small = draw_bell(80, fg=(255, 255, 255, 255), bg=(0, 0, 0, 255), bg_radius=16)
+    small.save(os.path.join(here, "icon_80.png"))
+
     marketing = draw_bell(144, fg=(255, 255, 255, 255), bg=(0, 0, 0, 255), bg_radius=28)
     marketing.save(os.path.join(here, "icon_144.png"))
 
     print("wrote", os.path.join(img_dir, "menu_icon.png"))
+    print("wrote", os.path.join(here, "icon_80.png"))
     print("wrote", os.path.join(here, "icon_144.png"))
 
 
