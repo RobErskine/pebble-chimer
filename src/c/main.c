@@ -17,6 +17,7 @@
 #define WAKEUP_AUTO_EXIT_MS 2000  // how long to stay open after a wakeup alert
 
 #define CLOCK_BORDER 10  // px of empty margin around the big time
+#define RND_INSET PBL_IF_ROUND_ELSE(18, 0)  // extra horizontal inset on round screens
 
 static Window *s_window;
 static Layer *s_clock_layer;   // custom 7-segment time, drawn to fill the width
@@ -127,7 +128,8 @@ static void draw_digit(GContext *ctx, int val, int x, int y, int dw, int dh, int
 //   4*dw + colon(0.35*dw) + 4*gap(0.22*dw) = 5.23*dw = available width.
 static void clock_update_proc(Layer *layer, GContext *ctx) {
   GRect r = layer_get_bounds(layer);
-  int avail_w = r.size.w - 2 * CLOCK_BORDER;
+  // On round screens, shrink the digit block away from the curved left/right edges.
+  int avail_w = r.size.w - 2 * CLOCK_BORDER - 2 * RND_INSET;
   int dw = avail_w * 100 / 523;
   int gap = dw * 22 / 100;
   int colon_w = dw * 35 / 100;
@@ -237,12 +239,22 @@ static void update_display(void) {
     snprintf(next, sizeof(next), "Chimes %s", c.enabled ? "--" : "off");
   }
 
+  // Round screens: narrow text area due to curve inset — show date + next only.
+  // emery: full 4-line footer with button hint.
+  // Other rect (144×168): 3 lines, no button hint.
+#if defined(PBL_ROUND)
+  snprintf(s_meta, sizeof(s_meta), "%s%s%s\n%s",
+           ampm, ampm[0] ? "  " : "", date, next);
+#elif defined(PBL_PLATFORM_EMERY)
   snprintf(s_meta, sizeof(s_meta),
            "%s%s%s\n%s\n%s  %s - %s%s\nSEL/UP/DN preview",
-           ampm, ampm[0] ? "  " : "", date,
-           next,
-           days, wstart, wend,
-           c.half_hour ? "  +:30" : "");
+           ampm, ampm[0] ? "  " : "", date, next,
+           days, wstart, wend, c.half_hour ? "  +:30" : "");
+#else
+  snprintf(s_meta, sizeof(s_meta), "%s%s%s\n%s\n%s  %s - %s%s",
+           ampm, ampm[0] ? "  " : "", date, next,
+           days, wstart, wend, c.half_hour ? "  +:30" : "");
+#endif
 
   if (s_clock_layer) layer_mark_dirty(s_clock_layer);
   if (s_meta_layer) text_layer_set_text(s_meta_layer, s_meta);
@@ -305,19 +317,29 @@ static void window_load(Window *window) {
   Layer *root = window_get_root_layer(window);
   GRect b = layer_get_bounds(root);
 
-  // Footer height: up to ~5 small lines (date, next chime, days, window,
-  // button hints). The clock is width-bound, so giving the footer more room
-  // does not shrink the digits.
+  // Footer height: emery gets 96px (full 4-line footer), small rect screens get
+  // 64px (3 lines at GOTHIC_14), round screens get ~1/3 of height (2 lines).
+#if defined(PBL_ROUND)
+  int meta_h = b.size.h / 3;
+#elif defined(PBL_PLATFORM_EMERY)
   int meta_h = 96;
+#else
+  int meta_h = 64;
+#endif
+  // On round screens push the clock down slightly so tall digits clear the top curve.
+  int clock_top = PBL_IF_ROUND_ELSE(10, 0);
 
-  s_clock_layer = layer_create(GRect(0, 0, b.size.w, b.size.h - meta_h));
+  s_clock_layer = layer_create(GRect(0, clock_top, b.size.w, b.size.h - meta_h - clock_top));
   layer_set_update_proc(s_clock_layer, clock_update_proc);
   layer_add_child(root, s_clock_layer);
 
-  s_meta_layer = text_layer_create(GRect(4, b.size.h - meta_h, b.size.w - 8, meta_h));
+  // Inset the footer horizontally on round screens; use a smaller font on narrow ones.
+  int fi = 4 + RND_INSET;
+  s_meta_layer = text_layer_create(GRect(fi, b.size.h - meta_h, b.size.w - 2 * fi, meta_h));
   text_layer_set_background_color(s_meta_layer, GColorClear);
   text_layer_set_text_color(s_meta_layer, GColorWhite);
-  text_layer_set_font(s_meta_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18));
+  text_layer_set_font(s_meta_layer, fonts_get_system_font(
+    b.size.w < 180 ? FONT_KEY_GOTHIC_14 : FONT_KEY_GOTHIC_18));
   text_layer_set_text_alignment(s_meta_layer, GTextAlignmentCenter);
   text_layer_set_overflow_mode(s_meta_layer, GTextOverflowModeWordWrap);
   layer_add_child(root, text_layer_get_layer(s_meta_layer));

@@ -1,11 +1,11 @@
 # Chimer
 
-A configurable hourly-chime app for the Pebble Time 2 (emery) — the Casio
-F-91W hourly beep, reimagined for your wrist.
+A configurable hourly-chime app for all Pebble watches — the Casio F-91W
+hourly beep, reimagined for your wrist.
 
 At the top of every hour Chimer gives you a vibration, an authentic square-wave
-"piezo" beep, or both, and flashes up a big, glanceable 7-segment clock before
-getting out of the way.
+"piezo" beep (on speaker-equipped models), or both, and flashes up a big,
+glanceable 7-segment clock before getting out of the way.
 
 ## Features
 
@@ -31,8 +31,8 @@ Requires the [Pebble SDK](https://github.com/coredevices/pebble-tool).
 
 ```bash
 pebble build
-pebble install --phone <YOUR_PHONE_IP>     # to a real watch
-pebble install --emulator emery            # to the QEMU emulator
+pebble install --phone <YOUR_PHONE_IP>                # to a real watch
+pebble install --emulator <platform>                  # aplite / basalt / chalk / diorite / emery
 ```
 
 The build output is `build/chimer.pbw`.
@@ -52,4 +52,5 @@ options.
 | `src/pkjs/config.js` | Clay settings form |
 | `src/pkjs/index.js` | Phone-side bridge: transforms settings → watch messages |
 
-Built for the Pebble Time 2; not yet ported to other platforms.
+Supports all 5 classic Pebble platforms (aplite, basalt, chalk, diorite, emery).
+On non-speaker models, chimes fall back to vibration only.

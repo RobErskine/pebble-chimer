@@ -1,7 +1,7 @@
 {
   "name": "chimer",
   "author": "rob",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "keywords": ["pebble-app"],
   "private": true,
   "dependencies": {
@@ -12,7 +12,7 @@
     "uuid": "7b3a9c64-1f2d-4e58-9a07-6c5d8e2f1b4a",
     "sdkVersion": "3",
     "enableMultiJS": true,
-    "targetPlatforms": ["emery"],
+    "targetPlatforms": ["aplite","basalt","chalk","diorite","emery"],
     "watchapp": {
       "watchface": false
     },
